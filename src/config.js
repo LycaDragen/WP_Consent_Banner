@@ -1,6 +1,6 @@
 window.ConsentBannerConfig = {
   text: "We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.",
-  image: "./images/placeholder.png",
+  image: window.location.origin + "/wp-content/plugins/wp-consent-banner/dist/cookie_100.png",
 
   colors: {
     // Banner

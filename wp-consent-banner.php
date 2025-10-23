@@ -124,7 +124,7 @@ function wp_consent_banner_settings_init() {
 function wp_consent_banner_default_options() {
     return [
         'text' => 'We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.',
-        'image' => plugin_dir_url(__FILE__) . 'dist/icon.png',
+        'image' => plugin_dir_url(__FILE__) . 'dist/cookie_100.png',
         'icon_position' => 'left',
         'show_minimized_icon' => '1',
 

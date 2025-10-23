@@ -208,7 +208,12 @@ input:checked + .slider:before {
     width: 90%;
     min-width: auto;
     padding: 18px;
+    padding-top: 40px; /* aumentar espacio superior */
     top: 52%;
+  }
+
+  #consentBanner button#closeBtn {
+    top: 12px; /* opcional: desplazar un poco el botón */
   }
 
   #bannerActions {
@@ -225,8 +230,16 @@ input:checked + .slider:before {
 
 @media (max-width: 400px) {
   #consentBanner {
-    padding: 14px;
+    padding-top: 36px;   /* suficiente espacio para el botón */
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-bottom: 14px; /* opcional */
   }
+
+  #consentBanner button#closeBtn {
+    top: 10px; /* opcional: ajustar posición del botón */
+  }
+
   #consentBanner p#consentText {
     font-size: calc(var(--banner-font-size) * 0.9);
   }
