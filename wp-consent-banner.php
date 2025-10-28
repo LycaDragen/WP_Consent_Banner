@@ -2,7 +2,7 @@
 /*
 Plugin Name: Consent Banner
 Description: Cookie Consent Banner with configuration panel and Google Tag Manager compatibility.
-Version: 1.3
+Version: 1.4
 Author: Lyca
 */
 
