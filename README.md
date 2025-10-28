@@ -57,6 +57,7 @@ wp-consent-banner/
 
 #### 📝 Configuración Básica
 - **Banner Text**: Texto principal del banner (ancho completo)
+- **Customizable Text Labels**: Personaliza los textos de categorías (Necessary, Preferences, Statistics, Marketing) y botones (Deny All, Allow Selection, Allow All)
 - **Icon URL**: URL del icono del banner minimizado (ancho completo)
 - **Minimized Icon Position**: Posición del icono (izquierda/derecha)
 - **Show Minimized Icon When Closed**: Mostrar icono cuando el banner está cerrado
@@ -116,28 +117,37 @@ El banner maneja 4 categorías de cookies:
 
 ## 🔗 Integración con Google Tag Manager
 
-### Eventos Automáticos
-El plugin envía automáticamente eventos a GTM cuando cambian las preferencias:
+### Google Consent Mode Integration
+El plugin utiliza Google Consent Mode v2 para gestionar los consentimientos:
 
 ```javascript
-window.dataLayer.push({
-  event: "gtm_consent_update",
-  consents: {
-    functionality_storage: "granted/denied",
-    personalization_storage: "granted/denied",
-    analytics_storage: "granted/denied",
-    ad_storage: "granted/denied",
-    ad_personalization: "granted/denied",
-    ad_user_data: "granted/denied",
-    security_storage: "granted/denied"
-  }
+gtag('consent', 'default', {
+  'ad_storage': 'denied',
+  'analytics_storage': 'denied',
+  'ad_user_data': 'denied',
+  'ad_personalization': 'denied',
+  'functionality_storage': 'granted',
+  'personalization_storage': 'denied',
+  'security_storage': 'granted',
+  'wait_for_update': 500
+});
+
+gtag('consent', 'update', {
+  'ad_storage': 'granted/denied',
+  'analytics_storage': 'granted/denied',
+  'ad_user_data': 'granted/denied',
+  'ad_personalization': 'granted/denied',
+  'functionality_storage': 'granted',
+  'personalization_storage': 'granted/denied',
+  'security_storage': 'granted'
 });
 ```
 
 ### Configuración en GTM
-1. Crea un trigger personalizado para el evento `gtm_consent_update`
+1. El plugin genera automáticamente el evento "Consent Update" cuando el usuario cambia sus preferencias
 2. Configura tus tags para que respeten los consentimientos
 3. El plugin manejará automáticamente la actualización de consentimientos
+4. Necessary cookies (security_storage y functionality_storage) siempre están en "granted"
 
 ## 💾 Almacenamiento de Datos
 
@@ -224,16 +234,16 @@ window.ConsentBannerConfig = {
 
 ### Limitaciones de Personalización
 - **No se pueden agregar nuevas categorías de cookies**: Solo las 4 predefinidas
-- **No se pueden cambiar los textos de los botones**: Solo el texto del banner
+- **Los textos son personalizables**: Puedes cambiar los textos de categorías y botones desde el panel de configuración
 - **No se pueden agregar nuevos botones**: Solo los 3 predefinidos
 - **No se puede cambiar la estructura HTML**: Solo estilos CSS
 
 ## 🔧 Desarrollo y Mantenimiento
 
 ### Versión Actual
-- **Versión**: 1.0
+- **Versión**: 1.4
 - **Autor**: Lyca
-- **Última actualización**: Mejoras en el panel administrativo
+- **Última actualización**: Integración con Google Consent Mode v2, textos personalizables, botón de restaurar valores por defecto
 
 ### Archivos Principales
 - `wp-consent-banner.php`: Lógica del plugin y panel administrativo
@@ -263,8 +273,8 @@ El plugin no incluye hooks personalizados, pero puedes:
 
 #### GTM no recibe los eventos
 1. Verifica que GTM esté correctamente instalado
-2. Revisa la consola del navegador para eventos `gtm_consent_update`
-3. Asegúrate de que el trigger en GTM esté configurado correctamente
+2. Revisa la consola del navegador para el evento "Consent Update"
+3. Asegúrate de que GTM esté configurado para responder a Google Consent Mode
 
 ### Debug
 Para debug, puedes usar:

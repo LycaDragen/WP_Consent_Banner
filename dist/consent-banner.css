@@ -50,6 +50,7 @@
   color: var(--banner-text);
   border: 1px solid #ccc;
   padding: 25px;
+  padding-top: 60px; /* Extra space for close button */
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
   font-family: Arial, sans-serif;
   z-index: 9999;
@@ -90,6 +91,7 @@
 #consentBanner p#consentText {
   text-align: center;
   margin-bottom: 20px;
+  margin-top: 0;
   font-size: var(--banner-font-size);
 }
 
@@ -208,12 +210,19 @@ input:checked + .slider:before {
     width: 90%;
     min-width: auto;
     padding: 18px;
-    padding-top: 40px; /* aumentar espacio superior */
+    padding-top: 50px; /* Space for close button */
     top: 52%;
   }
 
   #consentBanner button#closeBtn {
-    top: 12px; /* opcional: desplazar un poco el botón */
+    top: 8px;
+    right: 8px;
+  }
+
+  /* Ensure text doesn't overlap with close button */
+  #consentBanner p#consentText {
+    padding-top: 15px;
+    margin-top: 0;
   }
 
   #bannerActions {
@@ -230,17 +239,21 @@ input:checked + .slider:before {
 
 @media (max-width: 400px) {
   #consentBanner {
-    padding-top: 36px;   /* suficiente espacio para el botón */
+    padding-top: 50px; /* Space for close button on mobile */
     padding-left: 14px;
     padding-right: 14px;
-    padding-bottom: 14px; /* opcional */
+    padding-bottom: 14px;
   }
 
   #consentBanner button#closeBtn {
-    top: 10px; /* opcional: ajustar posición del botón */
+    top: 6px;
+    right: 6px;
   }
 
+  /* Ensure text doesn't overlap with close button */
   #consentBanner p#consentText {
+    padding-top: 15px;
+    margin-top: 0;
     font-size: calc(var(--banner-font-size) * 0.9);
   }
 }

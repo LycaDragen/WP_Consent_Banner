@@ -15,6 +15,7 @@ define( 'WP_CONSENT_BANNER_OPTION_KEY', 'wp_consent_banner_options' );
  */
 add_action( 'admin_menu', 'wp_consent_banner_admin_menu' );
 add_action( 'admin_init', 'wp_consent_banner_settings_init' );
+add_action( 'admin_post_wp_consent_banner_reset', 'wp_consent_banner_reset_handler' );
 
 function wp_consent_banner_admin_menu() {
     add_options_page(
@@ -119,6 +120,19 @@ function wp_consent_banner_settings_init() {
 }
 
 /**
+ * Reset to defaults handler
+ */
+function wp_consent_banner_reset_handler() {
+    if (!current_user_can('manage_options')) {
+        wp_die('Unauthorized');
+    }
+    check_admin_referer('wp_consent_banner_reset');
+    delete_option(WP_CONSENT_BANNER_OPTION_KEY);
+    wp_redirect(admin_url('options-general.php?page=wp-consent-banner&reset=1'));
+    exit;
+}
+
+/**
  * ====== CAMPOS ======
  */
 function wp_consent_banner_default_options() {
@@ -151,6 +165,15 @@ function wp_consent_banner_default_options() {
         'font_bannerText' => '16px',
         'font_optionText' => '15px',
         'font_buttonText' => '14px',
+
+        // Textos personalizables
+        'text_label_necessary' => 'Necessary',
+        'text_label_preferences' => 'Preferences',
+        'text_label_statistics' => 'Statistics',
+        'text_label_marketing' => 'Marketing',
+        'text_button_deny_all' => 'Deny All',
+        'text_button_allow_selection' => 'Allow Selection',
+        'text_button_allow_all' => 'Allow All',
     ];
 }
 
@@ -232,6 +255,9 @@ function wp_consent_banner_options_page_html() {
     ?>
     <div class="wrap">
         <h1>Consent Banner</h1>
+        <?php if (isset($_GET['reset']) && $_GET['reset'] == '1'): ?>
+            <div class="notice notice-success is-dismissible"><p>Settings have been reset to default values.</p></div>
+        <?php endif; ?>
         <form method="post" action="options.php">
             <?php settings_fields('wp_consent_banner'); ?>
             
@@ -244,6 +270,53 @@ function wp_consent_banner_options_page_html() {
                     <th scope="row">Banner Text</th>
                     <td>
                         <textarea name="<?php echo WP_CONSENT_BANNER_OPTION_KEY; ?>[text]" rows="3" style="width:100%;"><?php echo esc_textarea($opts['text']); ?></textarea>
+                    </td>
+                </tr>
+            </table>
+            
+            <!-- Texto personalizables de categorías y botones -->
+            <h3 style="font-weight: bold; font-size: 1.1em; text-decoration: underline; margin-top: 20px;">Customizable Text Labels:</h3>
+            <table class="form-table">
+                <tr>
+                    <th scope="row">Cookie Category Labels</th>
+                    <td>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px 30px; align-items: start;">
+                            <div>
+                                <label style="display: block; font-weight: 500; margin-bottom: 5px;">Necessary:</label>
+                                <input type="text" name="<?php echo WP_CONSENT_BANNER_OPTION_KEY; ?>[text_label_necessary]" value="<?php echo esc_attr($opts['text_label_necessary']); ?>" style="width: 100%;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 500; margin-bottom: 5px;">Preferences:</label>
+                                <input type="text" name="<?php echo WP_CONSENT_BANNER_OPTION_KEY; ?>[text_label_preferences]" value="<?php echo esc_attr($opts['text_label_preferences']); ?>" style="width: 100%;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 500; margin-bottom: 5px;">Statistics:</label>
+                                <input type="text" name="<?php echo WP_CONSENT_BANNER_OPTION_KEY; ?>[text_label_statistics]" value="<?php echo esc_attr($opts['text_label_statistics']); ?>" style="width: 100%;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 500; margin-bottom: 5px;">Marketing:</label>
+                                <input type="text" name="<?php echo WP_CONSENT_BANNER_OPTION_KEY; ?>[text_label_marketing]" value="<?php echo esc_attr($opts['text_label_marketing']); ?>" style="width: 100%;">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Button Text Labels</th>
+                    <td>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px 30px; align-items: start;">
+                            <div>
+                                <label style="display: block; font-weight: 500; margin-bottom: 5px;">Deny All:</label>
+                                <input type="text" name="<?php echo WP_CONSENT_BANNER_OPTION_KEY; ?>[text_button_deny_all]" value="<?php echo esc_attr($opts['text_button_deny_all']); ?>" style="width: 100%;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 500; margin-bottom: 5px;">Allow Selection:</label>
+                                <input type="text" name="<?php echo WP_CONSENT_BANNER_OPTION_KEY; ?>[text_button_allow_selection]" value="<?php echo esc_attr($opts['text_button_allow_selection']); ?>" style="width: 100%;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 500; margin-bottom: 5px;">Allow All:</label>
+                                <input type="text" name="<?php echo WP_CONSENT_BANNER_OPTION_KEY; ?>[text_button_allow_all]" value="<?php echo esc_attr($opts['text_button_allow_all']); ?>" style="width: 100%;">
+                            </div>
+                        </div>
                     </td>
                 </tr>
             </table>
@@ -402,7 +475,16 @@ function wp_consent_banner_options_page_html() {
                 </div>
             </div>
             
-            <?php submit_button(); ?>
+            <div style="margin-top: 30px;">
+                <?php submit_button(); ?>
+                <?php
+                $reset_url = wp_nonce_url(
+                    admin_url('admin-post.php?action=wp_consent_banner_reset'),
+                    'wp_consent_banner_reset'
+                );
+                ?>
+                <a href="<?php echo $reset_url; ?>" class="button button-secondary" style="margin-left: 10px;" onclick="return confirm('Are you sure you want to reset all settings to default values?');">Reset to Defaults</a>
+            </div>
         </form>
     </div>
     <?php
@@ -411,7 +493,35 @@ function wp_consent_banner_options_page_html() {
 /**
  * ====== FRONTEND: Inyectar CSS + JS ======
  */
+add_action('wp_head', 'wp_consent_banner_inject_consent_mode', 1);
 add_action('wp_enqueue_scripts', 'wp_consent_banner_enqueue_frontend');
+
+/**
+ * Inject Google Consent Mode default command in head
+ * This must load before GTM to prevent "consent not configured" error
+ */
+function wp_consent_banner_inject_consent_mode() {
+    ?>
+    <script>
+    // Google Consent Mode Default Command
+    // This sets the default state BEFORE GTM loads, preventing "consent not configured" errors
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    
+    // Set default consent state to denied (except Necessary which are always granted)
+    gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'analytics_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'functionality_storage': 'granted',  // Necessary - always granted
+        'personalization_storage': 'denied',
+        'security_storage': 'granted',         // Necessary - always granted
+        'wait_for_update': 500
+    });
+    </script>
+    <?php
+}
 function wp_consent_banner_enqueue_frontend() {
     $opts = wp_consent_banner_get_options();
 
@@ -430,6 +540,17 @@ function wp_consent_banner_enqueue_frontend() {
             'bannerText' => $opts['font_bannerText'],
             'optionText' => $opts['font_optionText'],
             'buttonText' => $opts['font_buttonText']
+        ],
+        'labels' => [
+            'necessary' => $opts['text_label_necessary'],
+            'preferences' => $opts['text_label_preferences'],
+            'statistics' => $opts['text_label_statistics'],
+            'marketing' => $opts['text_label_marketing']
+        ],
+        'buttonTexts' => [
+            'denyAll' => $opts['text_button_deny_all'],
+            'allowSelection' => $opts['text_button_allow_selection'],
+            'allowAll' => $opts['text_button_allow_all']
         ]
     ];
 
