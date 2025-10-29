@@ -564,7 +564,7 @@ function wp_consent_banner_enqueue_frontend() {
         'wp-consent-banner-script',
         plugin_dir_url(__FILE__) . 'dist/consent-banner.js',
         [],
-        null,
+        '1.5',  // Updated version to force cache refresh
         true
     );
 

@@ -78,7 +78,7 @@
     const consents = {
       functionality_storage: "granted",  // Always granted (Necessary)
       security_storage: "granted",        // Always granted (Necessary)
-      personalization_storage: (prefsChecked || marketingChecked) ? "granted" : "denied",
+      personalization_storage: prefsChecked ? "granted" : "denied",  // Only Preferences controls this
       analytics_storage: statsChecked ? "granted" : "denied",
       ad_storage: marketingChecked ? "granted" : "denied",
       ad_personalization: marketingChecked ? "granted" : "denied",
