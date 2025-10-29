@@ -2,7 +2,7 @@
 /*
 Plugin Name: Consent Banner
 Description: Cookie Consent Banner with configuration panel and Google Tag Manager compatibility.
-Version: 1.4
+Version: 1.5
 Author: Lyca
 */
 
@@ -564,7 +564,7 @@ function wp_consent_banner_enqueue_frontend() {
         'wp-consent-banner-script',
         plugin_dir_url(__FILE__) . 'dist/consent-banner.js',
         [],
-        '1.5',  // Updated version to force cache refresh
+        null,
         true
     );
 
